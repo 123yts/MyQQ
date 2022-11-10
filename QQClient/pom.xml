@@ -49,6 +49,9 @@
           <include>**/*.properties</include>
           <include>**/*.xml</include>
           <include>**/*.jpeg</include>
+          <include>**/*.jpg</include>
+          <include>**/*.png</include>
+
         </includes>
         <filtering>false</filtering>
       </resource>
