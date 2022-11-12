@@ -30,10 +30,8 @@ public class Parser {
     public static Message getRetMessage(String response){
         //解包聊天信息
         Map map = JSONObject.parseObject(response);
-        if (SystemConstant.SUCCESS.equals(map.get(SystemConstant.RET_CODE))){
-            return JSONObject.parseObject(JSONObject.toJSONString(map.get(SystemConstant.RET_DATA)), Message.class);
-        }
-        return new Message(null, null, "对方已断开连接");
+        return JSONObject.parseObject(JSONObject.toJSONString(map.get(SystemConstant.RET_DATA)), Message.class);
+
     }
 
     public static List<User> getRetFriendList(String response){

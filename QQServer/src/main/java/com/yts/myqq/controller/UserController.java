@@ -23,7 +23,6 @@ public class UserController {
         if ((user = dao.getUser(user.getAccount(), user.getPassword())) != null){
             //返回完整user数据，客户端存入User.self
             msgHandlerThread.response(Protocol.retData(SystemConstant.LOGIN, SystemConstant.SUCCESS, user));
-
         }
         else{
             //查询失败
@@ -44,6 +43,61 @@ public class UserController {
         String response = Protocol.retData(SystemConstant.FRIEND_LIST, SystemConstant.SUCCESS, dao.getUserList(user.getAccount()));
         msgHandlerThread.response(response);
         return response;
+    }
+
+    //添加好友
+    public String addFriend(Object data, MsgHandlerThread msgHandlerThread) throws IOException {
+        Message message = Parser.getMessage(data);
+        //请求方发送的消息
+        if (TCPServer.threadMap.get(message.getSender()) == msgHandlerThread){
+            //数据库查找是否有该用户
+            UserDao userDao = new UserDao();
+            if (!userDao.exitUser(message.getReceiver())){
+                message.setContent("该用户不存在");
+                msgHandlerThread.response(Protocol.retData(SystemConstant.ADD_FRIEND, SystemConstant.FAILURE, message));
+                return SystemConstant.FAILURE;
+            }
+            //是否已经是好友了
+            if (userDao.getFriendShip(message.getSender(), message.getReceiver()) || userDao.getFriendShip(message.getReceiver(), message.getSender())){
+                message.setContent(message.getReceiver() + "已经是你的好友了!");
+                msgHandlerThread.response(Protocol.retData(SystemConstant.ADD_FRIEND, SystemConstant.FAILURE, message));
+                return SystemConstant.FAILURE;
+            }
+            //转发请求
+            MsgHandlerThread aimThread = TCPServer.threadMap.get(message.getReceiver());
+            if (aimThread != null){
+                aimThread.response(Protocol.retData(SystemConstant.ADD_FRIEND, SystemConstant.SUCCESS, message));
+            }
+            else{
+                //通知对方已下线
+                message.setContent(message.getReceiver() + "已下线！");
+                msgHandlerThread.response(Protocol.retData(SystemConstant.ADD_FRIEND, SystemConstant.FAILURE, message));
+            }
+        }
+        //接收方发来回复
+        else{
+            MsgHandlerThread aimThread = TCPServer.threadMap.get(message.getSender());
+            UserDao userDao = new UserDao();
+            if (message.getContent().equals(SystemConstant.SUCCESS)){
+                //数据库添加好友关系
+                userDao.addFriendShip(message.getSender(), message.getReceiver());
+                userDao.addFriendShip(message.getReceiver(), message.getSender());
+                //刷新receiver方的好友列表
+                msgHandlerThread.response(Protocol.retData(SystemConstant.FRIEND_LIST, SystemConstant.SUCCESS, userDao.getUserList(message.getReceiver())));
+                message.setContent(message.getReceiver() + "通过了你的好友申请!");
+            }else {
+                message.setContent(message.getReceiver() + "拒绝了你的好友申请!");
+            }
+            //请求好友方未下线，就向请求方返回通知
+            if (aimThread != null){
+                //发送消息
+                aimThread.response(Protocol.retData(SystemConstant.ADD_FRIEND, SystemConstant.SUCCESS, message));
+                //重新加载好友列表
+                aimThread.response(Protocol.retData(SystemConstant.FRIEND_LIST, SystemConstant.SUCCESS, userDao.getUserList(message.getSender())));
+            }
+        }
+
+        return SystemConstant.ADD_FRIEND;
     }
 
     //用户下线后，通知其好友我已下线

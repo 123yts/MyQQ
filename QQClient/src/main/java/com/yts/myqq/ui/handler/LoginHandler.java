@@ -28,7 +28,6 @@ public class LoginHandler implements ActionListener {
             User.myself = new User(account, password);
             System.out.println("user " + User.myself);
             //加锁，如果登录成功后，保证先绘制好友列表界面，再动态获取列表数据并更新界面
-            //synchronized (MainView.class){
                 if (userController.login(User.myself)){
                     loginView.dispose();
                     //登录成功返回主界面
@@ -41,7 +40,6 @@ public class LoginHandler implements ActionListener {
                 }else {
                     JOptionPane.showMessageDialog(loginView, "用户名或密码错误!");
                 }
-            //}
         }
         else{
             JOptionPane.showMessageDialog(loginView, "用户名或密码为空!");

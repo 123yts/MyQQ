@@ -33,11 +33,13 @@ public class MsgController {
 
     TCPClient connection = TCPClient.getConnection();
 
+    //发送消息
     public void sendMessage(Message message){
         String request = Protocol.request(SystemConstant.CHAT, message);
         connection.send(request);
     }
 
+    //接收消息
     public Message receiveMessage(String response){
         return Parser.getRetMessage(response);
     }

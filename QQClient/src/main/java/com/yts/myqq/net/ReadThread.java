@@ -5,6 +5,7 @@ import com.yts.myqq.constant.SystemConstant;
 import com.yts.myqq.controller.MsgController;
 import com.yts.myqq.controller.UserController;
 import com.yts.myqq.model.Message;
+import com.yts.myqq.model.User;
 import com.yts.myqq.ui.ChatView;
 import com.yts.myqq.ui.MainView;
 
@@ -79,6 +80,34 @@ public class ReadThread implements Runnable{
                 message = msgController.receiveMessage(response);
                 JOptionPane.showMessageDialog(ChatView.chatViewMap.get(message.getReceiver()), "对方不在线!");
                 break;
+            case SystemConstant.ADD_FRIEND:
+                message = msgController.receiveMessage(response);
+                if (message.getSender().equals(User.myself.getAccount())){
+                    //收到回复
+                    String retCode = (String) JSONObject.parseObject(response).get(SystemConstant.RET_CODE);
+                    if(retCode.equals(SystemConstant.SUCCESS)){
+                        JOptionPane.showMessageDialog(MainView.mainView, message.getContent());
+                    }else {
+                        JOptionPane.showMessageDialog(MainView.mainView, message.getContent());
+                    }
+                }else{
+                    //收到请求
+                    int option = JOptionPane.showConfirmDialog(MainView.mainView,message.getSender() + "请求添加你为好友！是否通过？",
+                            "确认通过吗？", JOptionPane.YES_NO_OPTION);
+                    //同意好友请求
+                    if (option == JOptionPane.YES_OPTION){
+                        message.setContent(SystemConstant.SUCCESS);
+                        userController.responseAddFriend(message);
+                    }
+                    //不同意
+                    else {
+                        message.setContent(SystemConstant.FAILURE);
+                        userController.responseAddFriend(message);
+                    }
+                }
+
+
+
         }
 
     }

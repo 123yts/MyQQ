@@ -88,17 +88,21 @@ public class MsgHandlerThread implements Runnable{
         UserController userController = new UserController();
 
         switch (msgType){
-            //处理登陆
+                //处理登陆
             case SystemConstant.LOGIN:
                 return userController.login(data, msgHandlerThread);
-            //转发聊天信息
+                //转发聊天信息
             case SystemConstant.CHAT:
                 return msgController.sendMessage(data, msgHandlerThread);
-            //关闭socket(用户下线）
+                //关闭socket(用户下线）
             case SystemConstant.DISCONNECT:
                 return userController.disconnect(data);
+                //获取好友列表
             case SystemConstant.FRIEND_LIST:
                 return userController.getFriendList(data, msgHandlerThread);
+                //添加好友信息
+            case SystemConstant.ADD_FRIEND:
+                return userController.addFriend(data, msgHandlerThread);
             default:
                 return Protocol.retData(null, SystemConstant.FAILURE, "请求类型异常！");
         }

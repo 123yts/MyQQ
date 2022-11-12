@@ -37,13 +37,36 @@ public class UserDao {
         return null;
     }
 
+    public boolean exitUser(String account){
+        Connection connection = null;
+        PreparedStatement pst = null;
+        ResultSet resultSet = null;
+        try {
+            connection = JdbcUtils.getConnection();
+            String sql = "select * from user where account = ?";
+            pst = connection.prepareStatement(sql);
+            pst.setString(1, account);
+            resultSet = pst.executeQuery();
+            if (resultSet.next()){
+                return true;
+            }
+        } catch (SQLException throwables) {
+            System.out.println("查询失败！");
+            throwables.printStackTrace();
+        }
+        finally {
+            JdbcUtils.release(connection, pst, resultSet);
+        }
+        return false;
+    }
+
     public List<User> getUserList(String account){
         Connection connection = null;
         PreparedStatement pst = null;
         ResultSet resultSet = null;
         try {
             connection = JdbcUtils.getConnection();
-            String sql = "SELECT u.name, u.account, u.password FROM USER u INNER JOIN friend f ON u.account = f.friend AND f.`me` = ?";
+            String sql = "SELECT u.name, u.account, u.password FROM user u INNER JOIN friend f ON u.account = f.friend AND f.`me` = ?";
             pst = connection.prepareStatement(sql);
             pst.setString(1, account);
             resultSet = pst.executeQuery();
@@ -78,6 +101,51 @@ public class UserDao {
 
         } catch (SQLException throwables) {
             System.out.println("查询失败！");
+            throwables.printStackTrace();
+        }
+        finally {
+            JdbcUtils.release(connection, pst, null);
+        }
+        return false;
+    }
+
+    public boolean getFriendShip(String account1, String account2){
+        Connection connection = null;
+        PreparedStatement pst = null;
+        ResultSet resultSet = null;
+        try {
+            connection = JdbcUtils.getConnection();
+            String sql = "select * from friend where me = ? and friend = ?";
+            pst = connection.prepareStatement(sql);
+            pst.setString(1, account1);
+            pst.setString(2, account2);
+            resultSet = pst.executeQuery();
+            if (resultSet.next()){
+                return true;
+            }
+        } catch (SQLException throwables) {
+            System.out.println("查询失败！");
+            throwables.printStackTrace();
+        }
+        finally {
+            JdbcUtils.release(connection, pst, resultSet);
+        }
+        return false;
+    }
+
+    public boolean addFriendShip(String account1, String account2){
+        Connection connection = null;
+        PreparedStatement pst = null;
+        try {
+            connection = JdbcUtils.getConnection();
+            String sql = "insert into friend values (?, ?)";
+            pst = connection.prepareStatement(sql);
+            pst.setString(1, account1);
+            pst.setString(2, account2);
+            return pst.executeUpdate() > 0 ? true : false;
+
+        } catch (SQLException throwables) {
+            System.out.println("插入失败！");
             throwables.printStackTrace();
         }
         finally {

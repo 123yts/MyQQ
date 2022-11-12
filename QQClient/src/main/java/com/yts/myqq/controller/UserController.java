@@ -1,6 +1,7 @@
 package com.yts.myqq.controller;
 
 import com.yts.myqq.constant.SystemConstant;
+import com.yts.myqq.model.Message;
 import com.yts.myqq.model.User;
 import com.yts.myqq.net.TCPClient;
 import com.yts.myqq.util.Parser;
@@ -35,6 +36,7 @@ public class UserController {
         return Parser.getRetRegister(response);
     }
 
+    //初始化好友列表
     public void initFriendList(User user){
         String response = connection.sendAndReceive(Protocol.request(SystemConstant.FRIEND_LIST, user));
         List<User> userList = Parser.getRetFriendList(response);
@@ -47,13 +49,27 @@ public class UserController {
         connection.startReadThread();
     }
 
+
+    //获取好友列表
     public void getFriendList(String response){
         //获取所有用户列表
         List<User> userList = Parser.getRetFriendList(response);
         //存入好友map里面
         if (userList != null){
+            friendMap.clear(); //清空数据，重新加载
             userList.forEach(item -> friendMap.put(item.getAccount(), item));
         }else friendMap.clear(); //空就清空好友列表数据
+    }
+
+    //添加好友请求
+    public void addFriend(String account){
+        Message message = new Message(User.myself.getAccount(), account, SystemConstant.ADD_FRIEND);
+        connection.send(Protocol.request(SystemConstant.ADD_FRIEND, message));
+    }
+
+    //回复好友请求
+    public void responseAddFriend(Message message){
+        connection.send(Protocol.request(SystemConstant.ADD_FRIEND, message));
     }
 
 

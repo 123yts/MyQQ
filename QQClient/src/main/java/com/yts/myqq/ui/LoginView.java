@@ -1,16 +1,19 @@
 package com.yts.myqq.ui;
 
 
+import com.yts.myqq.controller.UserController;
+import com.yts.myqq.model.User;
 import com.yts.myqq.net.TCPClient;
-import com.yts.myqq.ui.handler.LoginHandler;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
 
-public class LoginView extends JFrame {
+public class LoginView extends JFrame implements ActionListener {
 
     //账号
     JComboBox<Object> account;
@@ -192,8 +195,7 @@ public class LoginView extends JFrame {
         ImageIcon image = new ImageIcon(url);
         JButton jb = new JButton("登         录", image);
         //为登陆按钮设置监听器
-        LoginHandler loginHandler = new LoginHandler(this);
-        jb.addActionListener(loginHandler);
+        jb.addActionListener(this);
         jb.setFont(new Font("宋体", 0, 13));//Font宋体
         jb.setBounds(130, 0, 175, 40);
         //将文字放在图片中间
@@ -215,6 +217,36 @@ public class LoginView extends JFrame {
         panel.add(jb);
         panel.add(jbri);
         return panel;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        UserController userController = new UserController();
+        //获取账号密码
+        String account = (String) this.getAccount().getSelectedItem();
+        String password = new String(this.getPassword().getPassword());
+
+        if (!"".equals(account) || !"".equals(password)){
+            User.myself = new User(account, password);
+            System.out.println("user " + User.myself);
+            //加锁，如果登录成功后，保证先绘制好友列表界面，再动态获取列表数据并更新界面
+            if (userController.login(User.myself)){
+                this.dispose();
+                //登录成功返回主界面
+                //获取好友列表数据
+                userController.initFriendList(User.myself);
+
+                //创建主界面
+                MainView.mainView = new MainView();
+
+            }else {
+                JOptionPane.showMessageDialog(this, "用户名或密码错误!");
+            }
+        }
+        else{
+            JOptionPane.showMessageDialog(this, "用户名或密码为空!");
+        }
+
     }
 
     public static void main(String[] args) {
