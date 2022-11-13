@@ -1,5 +1,6 @@
 package com.yts.myqq.ui;
 
+import com.yts.myqq.controller.MsgController;
 import com.yts.myqq.controller.UserController;
 import com.yts.myqq.model.User;
 import com.yts.myqq.net.TCPClient;
@@ -169,7 +170,17 @@ public class MainView extends JFrame implements MouseListener {
             if (user != null){
                 System.out.println("user值为： " + user);
                 //加载对应的聊天界面, 并放入Map中
-                ChatView.chatViewMap.put(user.getAccount(), new ChatView(user));
+                if (ChatView.chatViewMap.get(user.getAccount()) == null){
+                    ChatView.chatViewMap.put(user.getAccount(), new ChatView(user));
+                    //清空对应的未读消息
+                    //是否已初始化
+                    if (MsgController.notReadMsgCountMap.get(user.getAccount())==null) return;
+                    //已初始化且未读数量大于0条则清空
+                    if (MsgController.notReadMsgCountMap.get(user.getAccount()) > 0){
+                        MsgController.clearNotReadMsg(user.getAccount());
+                        MainView.mainView.reloadMainView();
+                    }
+                }
             }
         }
     }

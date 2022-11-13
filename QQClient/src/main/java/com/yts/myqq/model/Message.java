@@ -1,21 +1,23 @@
 package com.yts.myqq.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class Message {
 
     private String sender;
     private String receiver;
     private String content;
-
+    private boolean readed; //是否已读
 
     public Message(String sender, String receiver, String content) {
         this.sender = sender;
         this.receiver = receiver;
         this.content = content;
+    }
+
+    public Message(String sender, String receiver, String content, boolean readed) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.content = content;
+        this.readed = readed;
     }
 
     public Message() {
@@ -45,6 +47,13 @@ public class Message {
         this.content = content;
     }
 
+    public boolean isReaded() {
+        return readed;
+    }
+
+    public void setReaded(boolean readed) {
+        this.readed = readed;
+    }
 
     @Override
     public String toString() {
@@ -52,6 +61,7 @@ public class Message {
                 "sender='" + sender + '\'' +
                 ", receiver='" + receiver + '\'' +
                 ", content='" + content + '\'' +
+                ", readed=" + readed +
                 '}';
     }
 }

@@ -66,14 +66,13 @@ public class UserDao {
         ResultSet resultSet = null;
         try {
             connection = JdbcUtils.getConnection();
-            String sql = "SELECT u.name, u.account, u.password FROM user u INNER JOIN friend f ON u.account = f.friend AND f.`me` = ?";
+            String sql = "SELECT u.name, u.account FROM user u INNER JOIN friend f ON u.account = f.friend AND f.`me` = ?";
             pst = connection.prepareStatement(sql);
             pst.setString(1, account);
             resultSet = pst.executeQuery();
             List<User> userList = new ArrayList<>();
             while (resultSet.next()){
-                userList.add(new User(resultSet.getString("u.name"), resultSet.getString("u.account"),
-                        resultSet.getString("u.password")));
+                userList.add(new User(resultSet.getString("u.name"), resultSet.getString("u.account"),null));
             }
             return userList;
 

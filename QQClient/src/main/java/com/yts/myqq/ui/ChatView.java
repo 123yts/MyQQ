@@ -3,13 +3,15 @@ package com.yts.myqq.ui;
 import com.yts.myqq.controller.MsgController;
 import com.yts.myqq.model.Message;
 import com.yts.myqq.model.User;
+import com.yts.myqq.net.TCPClient;
 import com.yts.myqq.ui.ext.MessageCellRender;
-import javafx.scene.CacheHint;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +26,8 @@ public class ChatView extends JFrame{
     private DefaultListModel<Message> listModel; //消息列表数据
 
 
-    public void reloadCharView() {
-        System.out.println("执行reloadCharView方法");
+    public void reloadChatView() {
+        System.out.println("执行reloadChatView方法");
         //DefaultListModel<Message> listModel = new DefaultListModel<>();
         List<Message> list;
         if ((list = MsgController.messageMap.get(friend.getAccount())) != null){
@@ -59,11 +61,7 @@ public class ChatView extends JFrame{
         messageJList.setCellRenderer(new MessageCellRender());
 
         //初始化消息列表
-        reloadCharView();
-
-//        listModel.addElement(new Message(friend.getAccount(), User.myself.getAccount(), "搞出来了没？"));
-//        listModel.addElement(new Message(friend.getAccount(), User.myself.getAccount(), "搞出来了没？"));
-//        listModel.addElement(new Message(friend.getAccount(), User.myself.getAccount(), "搞出来了没？"));
+        reloadChatView();
 
         listScroll.setBounds(22,0,850, 500);
         listScroll.setViewportView(messageJList);
@@ -72,7 +70,7 @@ public class ChatView extends JFrame{
         //发送消息文本框panel
         JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         //发送消息文本框
-        JTextArea textArea = new JTextArea("", 5, 40); //
+        JTextArea textArea = new JTextArea("", 5, 40);
         textArea.setLineWrap(true); //自动换行
         textArea.setForeground(Color.RED); //背景颜色
         textArea.setFont(new Font("华文宋体", Font.BOLD, 15));
@@ -86,18 +84,18 @@ public class ChatView extends JFrame{
                 String text = textArea.getText();
                 if (text == null || "".equals(text)) return;
                 System.out.println(text);
-                Message message = new Message(User.myself.getAccount(), friend.getAccount(), text);
-                //发送消息给服务器
+                Message message = new Message(User.myself.getAccount(), friend.getAccount(), text, false);
+                //发送未读消息给服务器
                 MsgController msgController = new MsgController();
                 msgController.sendMessage(message);
+                //自己发的消息设置为已读
+                message.setReaded(true);
                 MsgController.addMessage(friend.getAccount(), message);
                 //置空
                 textArea.setText("");
                 MsgController.messageMap.get(friend.getAccount()).forEach(item -> System.out.println(item));
                 //设置list数据
-                //setListModel();
-                reloadCharView();
-                //listModel.addElement(message);
+                reloadChatView();
 
             }
         });
@@ -112,7 +110,17 @@ public class ChatView extends JFrame{
         contentPane.setBackground(new Color(51, 153, 255));
         setSize(900, 600);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        //setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        //关闭窗口时调用回调函数，释放socket资源
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                //关闭socket
+                ChatView.chatViewMap.remove(friend.getAccount());
+                ChatView.this.dispose();
+            }
+        });
         setResizable(false);
         setVisible(true);
     }

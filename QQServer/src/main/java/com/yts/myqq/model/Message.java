@@ -5,12 +5,19 @@ public class Message {
     private String sender;
     private String receiver;
     private String content;
-    private String msgType;
+    private boolean readed; //是否已读
 
     public Message(String sender, String receiver, String content) {
         this.sender = sender;
         this.receiver = receiver;
         this.content = content;
+    }
+
+    public Message(String sender, String receiver, String content, boolean readed) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.content = content;
+        this.readed = readed;
     }
 
     public Message() {
@@ -40,12 +47,12 @@ public class Message {
         this.content = content;
     }
 
-    public String getMsgType() {
-        return msgType;
+    public boolean isReaded() {
+        return readed;
     }
 
-    public void setMsgType(String msgType) {
-        this.msgType = msgType;
+    public void setReaded(boolean readed) {
+        this.readed = readed;
     }
 
     @Override
@@ -54,6 +61,7 @@ public class Message {
                 "sender='" + sender + '\'' +
                 ", receiver='" + receiver + '\'' +
                 ", content='" + content + '\'' +
+                ", readed=" + readed +
                 '}';
     }
 }

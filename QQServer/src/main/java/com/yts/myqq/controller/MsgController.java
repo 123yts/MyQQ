@@ -18,8 +18,8 @@ public class MsgController {
         //找到要转发的对象
         MsgHandlerThread aimThread = TCPServer.threadMap.get(message.getReceiver());
         if (aimThread != null){
-            System.out.println("threadMap。size = " + TCPServer.threadMap.size());
-            aimThread.response(Protocol.retData(SystemConstant.CHAT, SystemConstant.FAILURE, message));
+            System.out.println("threadMap.size = " + TCPServer.threadMap.size());
+            aimThread.response(Protocol.retData(SystemConstant.CHAT, SystemConstant.SUCCESS, message));
         }
         else {
             //对方已下线，不转发消息，返回对方离线数据

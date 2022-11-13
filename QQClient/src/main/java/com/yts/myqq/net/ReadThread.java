@@ -31,12 +31,13 @@ public class ReadThread implements Runnable{
         MsgController msgController = new MsgController();
         try {
             while (true){
+                Thread.sleep(1000);
                 String response = br.readLine();
                 read(response);
                 System.out.println("客户端收到 response: " + response);
 
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             System.out.println("客户端：数据读取异常");
             e.printStackTrace();
         }
@@ -57,11 +58,18 @@ public class ReadThread implements Runnable{
             //存储聊天信息
             case SystemConstant.CHAT:
                     message = msgController.receiveMessage(response);
-                    //存入对应的消息list中
-                    MsgController.addMessage(message.getSender(), message);
                     ChatView chatView = null;
                     if ((chatView = ChatView.chatViewMap.get(message.getSender())) != null){
-                        chatView.reloadCharView();
+                        //聊天窗口已打开，则设置收到的消息为已读
+                        message.setReaded(true);
+                        //存入对应的消息list中
+                        MsgController.addMessage(message.getSender(), message);
+                        chatView.reloadChatView();
+                    }else {
+                        //存入对应的消息list中
+                        MsgController.addMessage(message.getSender(), message);
+                        //重新加载主页面
+                        MainView.mainView.reloadMainView();
                     }
                     break;
 
@@ -105,7 +113,7 @@ public class ReadThread implements Runnable{
                         userController.responseAddFriend(message);
                     }
                 }
-
+                break;
 
 
         }
