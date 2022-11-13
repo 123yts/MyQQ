@@ -18,17 +18,10 @@ public class MainView extends JFrame implements MouseListener {
     private DefaultListModel<User> listModel; //好友列表数据
     private JList<User> friendList;  //好友列表
 
-    static User[] friends = new User[]{
-            new User("小明", "1232697", "123456"),
-            new User("小王", "1392768", "123456"),
-            new User("小李", "1543273", "123456"),
-            new User("小高", "1447149", "123456"),
-            new User("小吴", "1287324", "123456")
-    };
-
     public void reloadMainView(){
         System.out.println("reloadMainView");
         Iterator<Map.Entry<String, User>> iterator = UserController.friendMap.entrySet().iterator();
+        listModel.clear();
         while (iterator.hasNext()){
             User user = iterator.next().getValue();
             listModel.addElement(user);
@@ -39,32 +32,19 @@ public class MainView extends JFrame implements MouseListener {
 
     public MainView(){
 
-        //JPanel mainPanel = new JPanel(null);
-        //getContentPane().setLayout(new BorderLayout());
-
-        //个人信息界面
-//        JPanel userPanel = new JPanel();
-//        userPanel.setLayout(null);
-//        JLabel userLabel = new JLabel(User.myself.getName(), new ImageIcon(this.getClass().getClassLoader().getResource("images/qq.jpg")), JLabel.LEFT);
-//        userLabel.setPreferredSize(new Dimension(320, 180));
-//        userLabel.setFont(new Font("宋体", Font.BOLD, 22));
-//        userLabel.setForeground(Color.WHITE);
-//        userPanel.add(userLabel);
-
-        //getContentPane().add(userPanel, BorderLayout.NORTH);
-        //mainPanel.add(userPanel);
-
         //好友列表panel
         JPanel listPanel = new JPanel();
         listPanel.setLayout(null);
-        listPanel.setBackground(new Color(51, 153, 255));
+        listPanel.setBackground(new Color(131, 123, 205));
 
         //1、个人信息面板
-        JLabel userLabel = new JLabel(User.myself.getName(), new ImageIcon(this.getClass().getClassLoader().getResource("images/qq.jpg")), JLabel.LEFT);
+        ImageIcon icon = new ImageIcon(this.getClass().getClassLoader().getResource("images/qq.jpg"));
+        icon.setImage(icon.getImage().getScaledInstance(70, 70, Image.SCALE_DEFAULT));
+        JLabel userLabel = new JLabel(User.myself.getName(), icon, JLabel.LEFT);
         userLabel.setBounds(12, 0, 320, 80);
-        userLabel.setFont(new Font("宋体", Font.BOLD, 24));
-        userLabel.setForeground(Color.BLACK);
-        userLabel.setBackground(Color.BLUE);
+        userLabel.setFont(new Font("正楷", Font.BOLD, 24));
+        userLabel.setForeground(Color.WHITE);
+        //userLabel.setBackground(Color.BLUE);
         listPanel.add(userLabel);
 
         //添加好友面板
@@ -137,7 +117,6 @@ public class MainView extends JFrame implements MouseListener {
         //3、好友列表面板
         JScrollPane listScroll = new JScrollPane();
         listScroll.setBounds(12, 130, 320, 500);
-        //listScroll.setPreferredSize(new Dimension(320, 500));
         listPanel.add(listScroll);
 
 
@@ -156,8 +135,6 @@ public class MainView extends JFrame implements MouseListener {
         friendList.addMouseListener(this);
         // 设置窗体
         getContentPane().add(listPanel);
-        //mainPanel.add(listPanel);
-        //getContentPane().add(mainPanel);
 
         setTitle("QQ主界面");
         //关闭窗口时调用回调函数，释放socket资源
@@ -172,7 +149,6 @@ public class MainView extends JFrame implements MouseListener {
         });
         setIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("images/qq.jpg")).getImage());
         setSize(350, 700);
-        //getContentPane().setBackground(new Color(51, 153, 255));
         setResizable(false);
         Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (int) screensize.getWidth() - getWidth();

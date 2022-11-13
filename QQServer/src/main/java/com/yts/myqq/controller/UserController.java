@@ -10,7 +10,9 @@ import com.yts.myqq.util.Parser;
 import com.yts.myqq.util.Protocol;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class UserController {
 
@@ -29,6 +31,29 @@ public class UserController {
             msgHandlerThread.response(Protocol.retData(SystemConstant.LOGIN, SystemConstant.FAILURE, "用户名或密码错误！"));
         }
         return SystemConstant.FAILURE;
+    }
+
+    public String register(Object data, MsgHandlerThread msgHandlerThread) throws IOException {
+        User user = Parser.getUser(data);
+        UserDao dao = new UserDao();
+        System.out.println("user: " + user);
+        //随机生成QQ号
+        Random random = new Random();
+        random.setSeed(new Date().getTime());
+        while (true){
+            String account = "" + (random.nextInt(900) + 100);
+            //QQ号没被占用，创建用户
+            if (!dao.exitUser(account)){
+                user.setAccount(account);
+                break;
+            }
+        }
+        //数据插入数据
+        if (dao.insertUser(user)){
+            msgHandlerThread.response(Protocol.retData(SystemConstant.REGISTER, SystemConstant.SUCCESS, user));
+        }
+        else msgHandlerThread.response(Protocol.retData(SystemConstant.REGISTER, SystemConstant.FAILURE, null));
+        return SystemConstant.REGISTER;
     }
 
     //用户请求用户好友列表数据

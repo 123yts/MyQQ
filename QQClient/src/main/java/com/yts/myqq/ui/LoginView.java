@@ -7,18 +7,19 @@ import com.yts.myqq.net.TCPClient;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.net.URL;
 
-public class LoginView extends JFrame implements ActionListener {
+public class LoginView extends JFrame implements ActionListener, MouseListener {
 
     //账号
     JComboBox<Object> account;
     //密码
     JPasswordField password;
+    //注册
+    JLabel regeist;
+
+
 
     public JComboBox<Object> getAccount() {
         return account;
@@ -160,7 +161,8 @@ public class LoginView extends JFrame implements ActionListener {
         panel.setLayout(null);
         panel.setPreferredSize(new Dimension(100, 0));
         //创建两个JLabel标签组件
-        JLabel regeist = new JLabel("注册账号");
+        regeist = new JLabel("注册账号");
+        regeist.addMouseListener(this);
         regeist.setForeground(new Color(100, 149, 238));
         regeist.setBounds(0, 13, 60, 30);
         regeist.setFont(new Font("宋体", 0, 12));
@@ -249,8 +251,36 @@ public class LoginView extends JFrame implements ActionListener {
 
     }
 
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (e.getSource() == regeist){
+            if (e.getClickCount() == 1){
+                new RegisterView(this);
+            }
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
     public static void main(String[] args) {
         new LoginView();
     }
-
 }

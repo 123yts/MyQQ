@@ -31,7 +31,7 @@ public class UserController {
     }
 
     //注册
-    public boolean register(User user){
+    public User register(User user){
         String response = connection.sendAndReceive(Protocol.request(SystemConstant.REGISTER, user));
         return Parser.getRetRegister(response);
     }

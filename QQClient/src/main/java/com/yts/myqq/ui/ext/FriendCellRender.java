@@ -15,7 +15,7 @@ public class FriendCellRender extends DefaultListCellRenderer{
         //JPanel friendPanel = new JPanel();
         //friendPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         ImageIcon icon = new ImageIcon(this.getClass().getClassLoader().getResource("images/qq.jpg"));
-        icon.setImage(icon.getImage().getScaledInstance(70, 70, Image.SCALE_DEFAULT));
+        icon.setImage(icon.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
         JLabel label = new JLabel( user.getName() + "", icon, JLabel.LEFT);
         label.setPreferredSize(new Dimension(300, 75));
 

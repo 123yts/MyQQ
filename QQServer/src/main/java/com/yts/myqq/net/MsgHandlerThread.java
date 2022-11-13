@@ -91,6 +91,9 @@ public class MsgHandlerThread implements Runnable{
                 //处理登陆
             case SystemConstant.LOGIN:
                 return userController.login(data, msgHandlerThread);
+                //处理注册
+            case SystemConstant.REGISTER:
+                return userController.register(data, msgHandlerThread);
                 //转发聊天信息
             case SystemConstant.CHAT:
                 return msgController.sendMessage(data, msgHandlerThread);

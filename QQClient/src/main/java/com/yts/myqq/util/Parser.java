@@ -22,9 +22,12 @@ public class Parser {
         }
     }
 
-    public static boolean getRetRegister(String response){
+    public static User getRetRegister(String response){
         Map map = JSONObject.parseObject(response);
-        return SystemConstant.SUCCESS.equals(map.get(SystemConstant.RET_CODE));
+        if (SystemConstant.SUCCESS.equals(map.get(SystemConstant.RET_CODE))){
+            return JSON.parseObject(JSONObject.toJSONString(map.get(SystemConstant.RET_DATA)), User.class);
+        }
+        return null;
     }
 
     public static Message getRetMessage(String response){
