@@ -55,7 +55,12 @@
 
 ![img](./images/chat_step_2.png)  
 
-##五、数据库SQL  
+###五、右键菜单（删除好友功能）  
+
+![img](./images/deleteFriend_step_1.png)  
+
+
+##六、数据库SQL  
 
 用户表
 
