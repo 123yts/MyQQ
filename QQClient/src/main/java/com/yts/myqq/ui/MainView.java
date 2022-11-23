@@ -1,5 +1,6 @@
 package com.yts.myqq.ui;
 
+import com.yts.myqq.constant.SystemConstant;
 import com.yts.myqq.controller.MsgController;
 import com.yts.myqq.controller.UserController;
 import com.yts.myqq.model.User;
@@ -18,6 +19,7 @@ public class MainView extends JFrame implements MouseListener {
 
     private DefaultListModel<User> listModel; //好友列表数据
     private JList<User> friendList;  //好友列表
+    private JPopupMenu popupMenu;    //右键菜单
 
     public void reloadMainView(){
         System.out.println("reloadMainView");
@@ -38,7 +40,7 @@ public class MainView extends JFrame implements MouseListener {
         listPanel.setLayout(null);
         listPanel.setBackground(new Color(131, 123, 205));
 
-        //1、个人信息面板
+        //1、个人信息
         ImageIcon icon = new ImageIcon(this.getClass().getClassLoader().getResource("images/qq.jpg"));
         icon.setImage(icon.getImage().getScaledInstance(70, 70, Image.SCALE_DEFAULT));
         JLabel userLabel = new JLabel(User.myself.getName(), icon, JLabel.LEFT);
@@ -48,7 +50,7 @@ public class MainView extends JFrame implements MouseListener {
         //userLabel.setBackground(Color.BLUE);
         listPanel.add(userLabel);
 
-        //添加好友面板
+        //2、添加好友
         JLabel textLabel = new JLabel("好友列表");
         textLabel.setBounds(12, 85,60,40);
         textLabel.setFont(new Font("黑体", Font.BOLD, 14));
@@ -115,7 +117,46 @@ public class MainView extends JFrame implements MouseListener {
         });
         listPanel.add(addBtn);
 
-        //3、好友列表面板
+        //3、好友列表
+
+        //添加右键菜单
+        popupMenu = new JPopupMenu();
+
+        JMenuItem sendMsgMenuItem = new JMenuItem("发送消息");
+        sendMsgMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("发送消息！");
+                User user = friendList.getSelectedValue();
+                loadChatView(user);
+            }
+        });
+
+        JMenuItem deleteFriendMenuItem = new JMenuItem("删除好友");
+        deleteFriendMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("删除好友!");
+                UserController userController = new UserController();
+
+                User user = friendList.getSelectedValue();
+                if (user != null){
+                    System.out.println("user值为： " + user);
+                    //收到请求
+                    int option = JOptionPane.showConfirmDialog(MainView.mainView,"删除好友"+user.getName(),
+                            "确认删除吗？", JOptionPane.YES_NO_OPTION);
+                    //发送请求
+                    if (option == JOptionPane.YES_OPTION){
+                        userController.deleteFriend(user.getAccount());
+                    }
+                }
+            }
+        });
+
+
+        popupMenu.add(sendMsgMenuItem);
+        popupMenu.add(deleteFriendMenuItem);
+
         JScrollPane listScroll = new JScrollPane();
         listScroll.setBounds(12, 130, 320, 500);
         listPanel.add(listScroll);
@@ -162,25 +203,38 @@ public class MainView extends JFrame implements MouseListener {
         new MainView();
     }
 
+    //加载聊天界面
+    public void loadChatView(User user){
+        if (user != null){
+            System.out.println("user值为： " + user);
+            //加载对应的聊天界面, 并放入Map中
+            if (ChatView.chatViewMap.get(user.getAccount()) == null){
+                ChatView.chatViewMap.put(user.getAccount(), new ChatView(user));
+                //清空对应的未读消息
+                //是否已初始化
+                if (MsgController.notReadMsgCountMap.get(user.getAccount())==null) return;
+                //已初始化且未读数量大于0条则清空
+                if (MsgController.notReadMsgCountMap.get(user.getAccount()) > 0){
+                    MsgController.clearNotReadMsg(user.getAccount());
+                    MainView.mainView.reloadMainView();
+                }
+            }
+        }
+    }
+
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getClickCount() == 2){
             System.out.println("点了两次！");
             User user = friendList.getSelectedValue();
-            if (user != null){
-                System.out.println("user值为： " + user);
-                //加载对应的聊天界面, 并放入Map中
-                if (ChatView.chatViewMap.get(user.getAccount()) == null){
-                    ChatView.chatViewMap.put(user.getAccount(), new ChatView(user));
-                    //清空对应的未读消息
-                    //是否已初始化
-                    if (MsgController.notReadMsgCountMap.get(user.getAccount())==null) return;
-                    //已初始化且未读数量大于0条则清空
-                    if (MsgController.notReadMsgCountMap.get(user.getAccount()) > 0){
-                        MsgController.clearNotReadMsg(user.getAccount());
-                        MainView.mainView.reloadMainView();
-                    }
-                }
+            loadChatView(user);
+        }else {
+            //右键点击，展示菜单
+            if (e.getButton() == MouseEvent.BUTTON3){
+                popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                //为右键鼠标点击处的listItem设置选中状态
+                int row = friendList.locationToIndex(e.getPoint());
+                friendList.setSelectedIndex(row);
             }
         }
     }

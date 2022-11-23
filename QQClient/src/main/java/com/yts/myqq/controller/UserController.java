@@ -19,7 +19,7 @@ public class UserController {
 
     TCPClient connection = TCPClient.getConnection();
 
-    //登录
+    //登录请求
     public boolean login(User user){
         String response = connection.sendAndReceive(Protocol.request(SystemConstant.LOGIN, user));
 
@@ -30,13 +30,13 @@ public class UserController {
         return false;
     }
 
-    //注册
+    //注册请求
     public User register(User user){
         String response = connection.sendAndReceive(Protocol.request(SystemConstant.REGISTER, user));
         return Parser.getRetRegister(response);
     }
 
-    //初始化好友列表
+    //初始化好友列表请求
     public void initFriendList(User user){
         String response = connection.sendAndReceive(Protocol.request(SystemConstant.FRIEND_LIST, user));
         List<User> userList = Parser.getRetFriendList(response);
@@ -72,5 +72,10 @@ public class UserController {
         connection.send(Protocol.request(SystemConstant.ADD_FRIEND, message));
     }
 
+    //删除好友请求
+    public void deleteFriend(String account){
+        Message message = new Message(User.myself.getAccount(), account, SystemConstant.DELETE_FRIEND);
+        connection.send(Protocol.request(SystemConstant.DELETE_FRIEND, message));
+    }
 
 }

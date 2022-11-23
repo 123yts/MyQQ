@@ -8,6 +8,13 @@ import java.awt.*;
 
 public class MessageCellRender extends DefaultListCellRenderer {
 
+    private User friend;
+
+    public MessageCellRender(User user){
+        super();
+        this.friend = user;
+    }
+
     @Override
     public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
@@ -15,10 +22,12 @@ public class MessageCellRender extends DefaultListCellRenderer {
         JLabel messageLabel;
         //JPanel messagePanel;
         if (User.myself.getAccount().equals(message.getSender())){
-            messageLabel = new JLabel(message.getSender() + ": " + message.getContent(), JLabel.RIGHT);
+            //String content = message.getContent();
+            //String strMsg = "<html><body>" + content + "<br>" + "拼接一段换行文字" + "<body></html>";
+            messageLabel = new JLabel("我" + ": " + message.getContent(), JLabel.RIGHT);
             //messagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         }else{
-            messageLabel = new JLabel(message.getSender() + ": " + message.getContent(), JLabel.LEFT);
+            messageLabel = new JLabel(friend.getName() + ": " + message.getContent(), JLabel.LEFT);
             //messagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         }
         //            messageLabel.setPreferredSize(new Dimension());

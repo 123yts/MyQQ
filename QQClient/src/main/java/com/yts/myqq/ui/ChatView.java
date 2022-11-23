@@ -58,7 +58,7 @@ public class ChatView extends JFrame{
         JScrollPane listScroll = new JScrollPane();
         listModel = new DefaultListModel<>();
         JList<Message> messageJList = new JList<>(listModel);
-        messageJList.setCellRenderer(new MessageCellRender());
+        messageJList.setCellRenderer(new MessageCellRender(friend));
 
         //初始化消息列表
         reloadChatView();

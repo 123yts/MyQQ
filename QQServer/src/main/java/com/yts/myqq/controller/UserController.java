@@ -125,6 +125,30 @@ public class UserController {
         return SystemConstant.ADD_FRIEND;
     }
 
+    //删除好友
+    public String deleteFriend(Object data, MsgHandlerThread msgHandlerThread) throws IOException {
+        Message message = Parser.getMessage(data);
+        UserDao userDao = new UserDao();
+        //删除成功！
+        if(userDao.deleteFriendShip(message.getSender(), message.getReceiver()) &&
+                userDao.deleteFriendShip(message.getReceiver(), message.getSender())){
+            //返回删除成功消息
+            msgHandlerThread.response(Protocol.retData(SystemConstant.DELETE_FRIEND, SystemConstant.SUCCESS, message));
+            //重新加载好友列表
+            msgHandlerThread.response(Protocol.retData(SystemConstant.FRIEND_LIST, SystemConstant.SUCCESS, userDao.getUserList(message.getSender())));
+            //好友在线的话，同时更新好友的主界面
+            MsgHandlerThread aimthread = TCPServer.threadMap.get(message.getReceiver());
+            if (aimthread != null){
+                aimthread.response(Protocol.retData(SystemConstant.FRIEND_LIST, SystemConstant.SUCCESS, userDao.getUserList(message.getReceiver())));
+            }
+        }else{
+            //返回失败信息
+            msgHandlerThread.response(Protocol.retData(SystemConstant.DELETE_FRIEND, SystemConstant.FAILURE, message));
+        }
+
+        return SystemConstant.DELETE_FRIEND;
+    }
+
     //用户下线后，通知其好友我已下线
     public void notifyFriendsForOffLine(){
         //TODO
@@ -135,7 +159,7 @@ public class UserController {
         Message message = Parser.getMessage(data);
         System.out.println("message： " + message);
         //找到其它所有好友，通知他们我下线了，并将thread从map中删除
-        //Todo
+        //TODO
         TCPServer.threadMap.remove(message.getSender());
         return SystemConstant.DISCONNECT;
     }

@@ -93,6 +93,7 @@ public class ReadThread implements Runnable{
                 if (message.getSender().equals(User.myself.getAccount())){
                     //收到回复
                     String retCode = (String) JSONObject.parseObject(response).get(SystemConstant.RET_CODE);
+                    //展示提示信息
                     if(retCode.equals(SystemConstant.SUCCESS)){
                         JOptionPane.showMessageDialog(MainView.mainView, message.getContent());
                     }else {
@@ -114,8 +115,18 @@ public class ReadThread implements Runnable{
                     }
                 }
                 break;
-
-
+            //删除好友响应
+            case SystemConstant.DELETE_FRIEND:
+                String retCode = (String) JSONObject.parseObject(response).get(SystemConstant.RET_CODE);
+                //删除成功！
+                if (SystemConstant.SUCCESS.equals(retCode)){
+                    JOptionPane.showMessageDialog(MainView.mainView, "删除成功！");
+                }else{
+                    JOptionPane.showMessageDialog(MainView.mainView, "删除失败！");
+                }
+                break;
+            default:
+                System.out.println("无效响应数据!");
         }
 
     }

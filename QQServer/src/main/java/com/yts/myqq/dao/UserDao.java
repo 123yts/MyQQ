@@ -153,4 +153,25 @@ public class UserDao {
         return false;
     }
 
+    public boolean deleteFriendShip(String account1, String account2){
+        Connection connection = null;
+        PreparedStatement pst = null;
+        try {
+            connection = JdbcUtils.getConnection();
+            String sql = "delete from friend where me = ? and friend = ?";
+            pst = connection.prepareStatement(sql);
+            pst.setString(1, account1);
+            pst.setString(2, account2);
+            return pst.executeUpdate() > 0 ? true : false;
+
+        } catch (SQLException throwables) {
+            System.out.println("删除失败！");
+            throwables.printStackTrace();
+        }
+        finally {
+            JdbcUtils.release(connection, pst, null);
+        }
+        return false;
+    }
+
 }

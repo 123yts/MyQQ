@@ -8,7 +8,8 @@ public class SystemConstant {
     public static final String REGISTER = "REGISTER";  //2、注册请求
     public static final String CHAT = "CHAT";   //3、聊天消息
     public static final String ADD_FRIEND = "ADD_FRIEND";   //4、添加好友
-    public static final String DISCONNECT = "DISCONNECT";  //5、关闭socket连接
+    public static final String DELETE_FRIEND = "DELETE_FRIEND";   //5、添加好友
+    public static final String DISCONNECT = "DISCONNECT";  //6、关闭socket连接
 
     public static final String DATA = "DATA";   //请求数据
 

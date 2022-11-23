@@ -38,7 +38,7 @@ public class MsgHandlerThread implements Runnable{
                 System.out.println("request: " + request);
 
                 //响应报文
-                String response = response(request, this);
+                String response = requestHandler(request, this);
 
                 //客户端是否要断开连接
                 if (SystemConstant.DISCONNECT.equals(response)){
@@ -74,12 +74,14 @@ public class MsgHandlerThread implements Runnable{
         }
     }
 
+    //发送响应数据给客户端
     public void response(String response) throws IOException {
         out.write((response + "\n").getBytes(StandardCharsets.UTF_8));
         System.out.println("response: " + response);
     }
 
-    public String response(String response, MsgHandlerThread msgHandlerThread) throws IOException {
+    //处理请求
+    public String requestHandler(String response, MsgHandlerThread msgHandlerThread) throws IOException {
         Map<String, Object> map = JSONObject.parseObject(response);
         String msgType = (String) map.get(SystemConstant.MSG_TYPE);
         Object data = map.get(SystemConstant.DATA);
@@ -103,9 +105,12 @@ public class MsgHandlerThread implements Runnable{
                 //获取好友列表
             case SystemConstant.FRIEND_LIST:
                 return userController.getFriendList(data, msgHandlerThread);
-                //添加好友信息
+                //添加好友
             case SystemConstant.ADD_FRIEND:
                 return userController.addFriend(data, msgHandlerThread);
+                //删除好友
+            case SystemConstant.DELETE_FRIEND:
+                return userController.deleteFriend(data, msgHandlerThread);
             default:
                 return Protocol.retData(null, SystemConstant.FAILURE, "请求类型异常！");
         }
